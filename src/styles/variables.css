@@ -1,0 +1,61 @@
+:root {
+  /* Colors */
+  --color-background: #f5f1e8;
+  --color-text: #111111;
+  --color-muted: #555048;
+  --color-card: #fdfbf6;
+  --color-card-hover: #ffffff;
+  --color-border: #111111;
+  --color-shadow: #111111;
+  --color-focus: #111111;
+  --color-timeline-line: rgba(0, 0, 0, 0.12);
+  --color-timeline-description: #737373;
+
+  /* Fonts */
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --font-card-title: "Roboto Mono", var(--font-mono);
+
+  /* Type scale */
+  --font-size-name: clamp(1.5rem, 1vw + 1rem, 2rem);
+  --font-size-card-title: calc(clamp(1.5rem, 1vw + 1rem, 2rem) * var(--card-scale));
+  --font-size-intro: 0.85rem;
+  --font-size-body: 1rem;
+  --font-size-small: 0.85rem;
+
+  /* Layout */
+  --content-max-width: 1200px;
+  --text-max-width: 60ch;
+  --page-padding: clamp(1.25rem, 5vw, 5rem);
+  --section-spacing: clamp(3rem, 8vw, 7rem);
+  --card-gap: clamp(1.25rem, 2.5vw, 2rem);
+  --intro-to-cards-spacing: clamp(1.5rem, 3vw, 2.5rem);
+  /* Card height and title size both scale by this factor. */
+  --card-scale: 0.65;
+  /* Right edge of each card lands at 40% of the window width. */
+  --card-width: calc(40vw - var(--page-padding));
+  --card-min-width: 22rem;
+  --card-padding-y: calc(clamp(1.25rem, 2.5vw, 2.25rem) * var(--card-scale));
+  --card-padding-x: clamp(1.25rem, 2vw, 1.75rem);
+
+  /* Borders & shadows */
+  --border-width: 1px;
+  --border-radius: 0;
+  --shadow-offset: 4px;
+  --shadow-offset-hover: 2px;
+  --focus-outline-width: 2px;
+  --focus-outline-offset: 4px;
+
+  /* River */
+  --color-bank: var(--color-text);
+  --bank-line-width: 1.5px;
+  /* The dots' shades, darkest to lightest (a Starry Night sky: cobalt, cerulean, pale
+     sky); the look's `buckets` steps run across them. Add or remove --color-dot-N to
+     change how many there are. */
+  --color-dot-1: #366fc4;
+  --color-dot-2: #5a9bd0;
+  --color-dot-3: #88b9dc;
+
+  /* Motion */
+  --transition-fast: 120ms ease-out;
+}

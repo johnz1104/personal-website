@@ -1,0 +1,424 @@
+/* ---------- Base ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: var(--focus-outline-width) solid var(--color-focus);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* ---------- Page layout ---------- */
+
+.page {
+  max-width: var(--content-max-width);
+  padding: var(--section-spacing) var(--page-padding);
+}
+
+/* The page fills the window. Its content keeps a fixed layout for a 1200 x 750
+   display; the river behind it (dots, bank and Flow box) is drawn at a fixed scale,
+   is bigger than any screen, and stays fixed to the window, which crops it. Taller
+   content (a long list, long prose) scrolls over the still river. */
+.river-canvas {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 100vh;
+  margin-inline: 0;
+
+  /* Fixed display layout; the river's mathematical domain stays 1440 x 900. */
+  --page-padding: 3rem;
+  --section-spacing: 4rem;
+  --font-size-name: 2.125rem;
+  --font-size-intro: 1rem;
+  --font-size-small: 0.875rem;
+  --card-scale: 0.8;
+  --font-size-card-title: calc(2rem * var(--card-scale));
+  --card-width: calc(var(--canvas-width) * 0.4 - var(--page-padding));
+  --card-gap: 1.5rem;
+  --intro-to-cards-spacing: 2rem;
+  --card-padding-y: calc(2.25rem * var(--card-scale));
+  --card-padding-x: 1.75rem;
+}
+
+.river-canvas .intro {
+  margin-top: 1.75rem;
+}
+
+.river-canvas .page {
+  position: relative;
+}
+
+/* Page titles share the homepage name's font, size and position. */
+.site-name {
+  font-family: var(--font-display);
+  font-size: var(--font-size-name);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.intro {
+  max-width: var(--text-max-width);
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  font-size: var(--font-size-intro);
+  line-height: 1.7;
+}
+
+/* Reading text that takes the place of the cards (About Me, detail pages). */
+.prose {
+  max-width: var(--text-max-width);
+  margin-top: var(--intro-to-cards-spacing);
+  line-height: 1.7;
+}
+
+.prose p + p {
+  margin-top: 1em;
+}
+
+/* About Me: the photo on the left and the text as a column beside it (lines start at
+   the same edge, not under the photo), both left of the river bank: the text column
+   is narrower than elsewhere. The photo is framed like the section cards. */
+.about {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-top: var(--intro-to-cards-spacing);
+}
+
+.about .prose {
+  max-width: 28rem;
+  margin-top: 0;
+}
+
+.about-photo {
+  flex: none;
+  width: 10rem;
+  height: auto;
+  /* The top lines up with the first line's capitals. */
+  margin-top: 0.4rem;
+  border: var(--border-width) solid var(--color-border);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-shadow);
+}
+
+/* Detail pages: the content sits in the middle of the window. The page spans the
+   window so the back link keeps its corner. Headings and short text are centered;
+   longer reading text (.prose) stays left-aligned inside its centered column. */
+.page--centered {
+  max-width: none;
+  text-align: center;
+}
+
+.page--centered .intro,
+.page--centered .prose {
+  margin-inline: auto;
+}
+
+/* Long titles wrap onto two lines of about equal length (balance) instead of one
+   long line; short titles stay on one. */
+.page--centered .site-name {
+  max-width: 18em;
+  margin-inline: auto;
+  text-wrap: balance;
+}
+
+.page--centered .prose {
+  text-align: left;
+}
+
+/* A small, quiet note, e.g. that a detail page is still being written. */
+.page-note {
+  margin-top: var(--intro-to-cards-spacing);
+  font-size: var(--font-size-small);
+  font-style: italic;
+  color: var(--color-muted);
+}
+
+/* Sits in the top padding so the title stays where the homepage name is. */
+.back-link {
+  position: absolute;
+  top: 1.5rem;
+  left: var(--page-padding);
+  font-size: var(--font-size-small);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+/* ---------- Section cards ---------- */
+
+.card-list {
+  display: grid;
+  gap: var(--card-gap);
+  width: min(100%, max(var(--card-width), var(--card-min-width)));
+  margin: var(--intro-to-cards-spacing) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.section-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  column-gap: 0.75rem;
+  padding: var(--card-padding-y) var(--card-padding-x);
+  background: var(--color-card);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-shadow);
+  text-decoration: none;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.section-card:hover,
+.section-card:focus-visible {
+  background: var(--color-card-hover);
+  transform: translate(
+    calc(var(--shadow-offset) - var(--shadow-offset-hover)),
+    calc(var(--shadow-offset) - var(--shadow-offset-hover))
+  );
+  box-shadow: var(--shadow-offset-hover) var(--shadow-offset-hover) 0 var(--color-shadow);
+}
+
+.section-card:active {
+  transform: translate(var(--shadow-offset), var(--shadow-offset));
+  box-shadow: 0 0 0 var(--color-shadow);
+}
+
+.section-card-index {
+  font-size: var(--font-size-small);
+  color: var(--color-muted);
+  letter-spacing: 0.08em;
+}
+
+.section-card-title {
+  font-family: var(--font-card-title);
+  font-size: var(--font-size-card-title);
+  font-weight: 700;
+  line-height: 1.15;
+}
+/* ---------- Timeline list (Research, Projects) ---------- */
+/* Used when LIST_STYLE is "timeline" in ItemList.jsx. Cards reuse the
+   .section-card border, shadow and hover; the rules below override layout. */
+
+.timeline {
+  --timeline-gap: 24px;          /* line to the cards' left edge */
+  --timeline-lead: 64px;         /* line extends this far above the first card */
+  --timeline-marker-size: 6px;
+  --timeline-card-padding-y: 14px;
+  --timeline-card-padding-x: 16px;
+  --timeline-font-size: 0.75rem;
+  /* Titles two sizes above the description (12 px -> 14 px). */
+  --timeline-title-size: 0.875rem;
+  /* A bit wider than the homepage cards, so descriptions take fewer lines. */
+  --timeline-width: calc(var(--card-width) * 1.2);
+  --timeline-title-line-height: 1.4;
+  /* Card top to the middle of its title line; the marker and the line's
+     fade both follow it. */
+  --timeline-marker-offset: calc(
+    var(--border-width) + var(--timeline-card-padding-y)
+      + var(--timeline-title-size) * var(--timeline-title-line-height) / 2
+  );
+
+  position: relative;
+  display: grid;
+  gap: calc(var(--shadow-offset) + 1rem);
+  width: 100%;
+  max-width: var(--timeline-width);
+  margin: var(--intro-to-cards-spacing) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* One continuous line, fading in from the top. It reaches full strength at
+   the first marker. */
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: calc(-1 * var(--timeline-lead));
+  bottom: 0;
+  left: calc(-1 * var(--timeline-gap));
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-timeline-line)
+      calc(var(--timeline-lead) + var(--timeline-marker-offset))
+  );
+}
+
+.timeline-item {
+  position: relative;
+}
+
+.timeline-marker {
+  position: absolute;
+  z-index: 1;
+  top: calc(var(--timeline-marker-offset) - var(--timeline-marker-size) / 2);
+  left: calc(-1 * var(--timeline-gap) + 0.5px - var(--timeline-marker-size) / 2);
+  width: var(--timeline-marker-size);
+  height: var(--timeline-marker-size);
+  border-radius: 1px;
+  background: var(--color-text);
+}
+
+.timeline-card {
+  display: block;
+  padding: var(--timeline-card-padding-y) var(--timeline-card-padding-x);
+}
+
+.timeline-card-title {
+  font-family: var(--font-card-title);
+  font-size: var(--timeline-title-size);
+  font-weight: 700;
+  line-height: var(--timeline-title-line-height);
+  color: var(--color-text);
+}
+
+.timeline-card-description {
+  margin-top: 12px;
+  font-size: var(--timeline-font-size);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-timeline-description);
+}
+
+/* ---------- River ---------- */
+
+/* The river's dots: above the page background, under the bank line and the page
+   content. z-index -1 puts them under all content, positioned or not, and stays
+   inside the isolated .river-canvas. Fixed: the river is a backdrop the window
+   crops, and the page scrolls over it. */
+.river-dots {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: -1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* The page content, zoomed as a whole above the reference window
+   (RiverLayout.jsx sets the zoom). */
+.river-content {
+  display: block;
+}
+
+/* The control box floating in the river (RiverControls.jsx): placed and sized in page
+   units from JS, on the solid box the simulation puts in the water. It looks like the
+   section cards. */
+.river-controls {
+  position: fixed;
+  z-index: 1;
+}
+
+.river-controls-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45em;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  font: inherit;
+  line-height: 1.1;
+  color: inherit;
+  background: var(--color-card);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-shadow);
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.river-controls-toggle:hover,
+.river-controls-toggle:focus-visible {
+  background: var(--color-card-hover);
+  transform: translate(
+    calc(var(--shadow-offset) - var(--shadow-offset-hover)),
+    calc(var(--shadow-offset) - var(--shadow-offset-hover))
+  );
+  box-shadow: var(--shadow-offset-hover) var(--shadow-offset-hover) 0 var(--color-shadow);
+}
+
+.river-controls-toggle:active {
+  transform: translate(var(--shadow-offset), var(--shadow-offset));
+  box-shadow: 0 0 0 var(--color-shadow);
+}
+
+.river-controls-state {
+  font-weight: 700;
+}
+
+/* The bank line: fixed with the dots, above them and under the page content, so
+   cards that reach into the river cover it. */
+.river-bank {
+  position: fixed;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.river-bank svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: var(--river-width);
+  height: var(--river-height);
+  max-width: none;
+  fill: none;
+  stroke: var(--color-bank);
+  stroke-width: var(--bank-line-width);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-card {
+    transition: none;
+  }
+}

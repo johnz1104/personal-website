@@ -1,0 +1,42 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local planning notes (kept out of the repo)
+/plans/
+
+# Native research builds and generated data
+fluids/build/
+fluids/ml/data/
+fluids/ml/logs/
+*.bmp
+__pycache__/
+.pytest_cache/
+fluids/.cache/
+
+# The author's river flow sketch (local design reference)
+/river_flow_diagram.jpeg
+
+# Staging folder for the GitHub release (a git worktree; see DEVELOPMENT.md)
+/site-release/
