@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PAGE_SCALE, pageScale } from "./config.js";
 import { drawDots, makePalette, readDotColors } from "./draw.js";
+import { createPainter } from "./paint.js";
 import { takePrestartedWorker } from "./prestart.js";
 
 // Frame-time samples kept for the tuning panel's mean and p95 (about 5 s at 60 Hz).
@@ -20,6 +21,30 @@ const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 // follow the water, not wiggle).
 export function wantsJitter(look) {
   return look.tracers === false || !((look.lines ?? 0) > 0);
+}
+
+// The painted water's settings in a look (paint.js): look.paint is true for the
+// defaults or an object of overrides; absent or false for none.
+export function paintLook(look) {
+  if (!look.paint) return null;
+  return look.paint === true ? {} : look.paint;
+}
+
+// One painter per canvas: React's development double mount reuses it, since a canvas
+// keeps its WebGL context for life.
+const painters = new WeakMap();
+
+function painterFor(canvas, river) {
+  const known = painters.get(canvas);
+  if (known && known.river === river) return known.painter;
+  let painter = null;
+  try {
+    painter = createPainter(canvas, river);
+  } catch (error) {
+    console.error(`[river] painted water off: ${error.message}`);
+  }
+  painters.set(canvas, { river, painter });
+  return painter;
 }
 
 function pushSample(samples, value) {
@@ -64,7 +89,14 @@ export function useRiverPlaying() {
 // Returns a ref for the tuning panel, to read outside rendering. While a river runs,
 // ref.current holds `stats` (seed, warm-up, frame times, the latest diagnostics)
 // and `frame()`, a copy of the latest dots; otherwise it is null.
-export function useRiverSimulation({ canvasRef, river, options, look, seed, enabled, paused = false }) {
+//
+// idea-painted-river: look.timeScale plays the river in slow motion (0.5 = half speed:
+// the same flow, dots and paint, at half the rate, and half the lattice steps per
+// second). With look.paint, paintCanvasRef's canvas shows the painted water (paint.js)
+// under the dots; the worker then sends the flow field with every frame.
+export function useRiverSimulation({
+  canvasRef, paintCanvasRef = null, river, options, look, seed, enabled, paused = false,
+}) {
   const lookRef = useRef(look);
   const pausedRef = useRef(paused);
   const riverRef = useRef(null);
@@ -110,6 +142,16 @@ export function useRiverSimulation({ canvasRef, river, options, look, seed, enab
     // Sent to the worker when it changes (wantsJitter).
     const wantJitter = () => wantsJitter(lookRef.current);
     let jitter = wantJitter();
+    // The painted water, made the first time a look asks for it (null where WebGL2 is
+    // missing: the dots alone then).
+    const paintCanvas = paintCanvasRef?.current ?? null;
+    let painter = null;
+    const wantField = () => {
+      if (!paintCanvas || !paintLook(lookRef.current)) return false;
+      painter ??= painterFor(paintCanvas, river);
+      return painter !== null;
+    };
+    let field = wantField();
 
     let lastDraw = 0;
     let fadeDebt = 0;   // seconds of trail fading not yet applied
@@ -119,6 +161,18 @@ export function useRiverSimulation({ canvasRef, river, options, look, seed, enab
       if (wantJitter() !== jitter) {
         jitter = wantJitter();
         worker?.postMessage({ type: "jitter", on: jitter });
+      }
+      if (wantField() !== field) {
+        field = wantField();
+        worker?.postMessage({ type: "field", on: field });
+      }
+      if (painter) {
+        const paint = paintLook(current);
+        if (paint) {
+          painter.render({ scale, dpr, look: paint, visible: current.visible ?? true });
+        } else {
+          painter.clear();
+        }
       }
       // Trails: erase only part of the last frame, so each dot leaves a streak that
       // fades over `trail` seconds. The fade is applied in steps of at least 10%: a
@@ -145,8 +199,11 @@ export function useRiverSimulation({ canvasRef, river, options, look, seed, enab
         stride: front ? front.stride : 4,
         tailAges: front?.tailAges,
         scale, dpr, radius: current.radius, fadeIn: current.fadeIn, palette,
-        opacity: current.opacity ?? 1, visible: current.visible ?? true, clear,
+        opacity: current.opacity ?? 1, clear,
+        // look.dots: false shows the painted water alone.
+        visible: (current.visible ?? true) && (current.dots ?? true),
         lines: current.tracers === false ? 0 : current.lines ?? 0,
+        brush: current.brush ?? null,
       });
       if (front) pushSample(stats.drawMs, performance.now() - t0);
     };
@@ -161,7 +218,8 @@ export function useRiverSimulation({ canvasRef, river, options, look, seed, enab
         pushSample(stats.late, inFlight ? 1 : 0);
       }
       if (ready && now >= startAt && !inFlight && !pausedRef.current) {
-        const dt = lastTime === null ? 1 / 60 : (now - lastTime) / 1000;
+        const dt = (lastTime === null ? 1 / 60 : (now - lastTime) / 1000)
+          * (lookRef.current.timeScale ?? 1);
         lastTime = now;
         inFlight = true;
         const buffer = spare;
@@ -180,6 +238,7 @@ export function useRiverSimulation({ canvasRef, river, options, look, seed, enab
       worker?.terminate();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      painter?.clear();
     };
 
     // Any failure: log once, then show the bank only. The page keeps working.
@@ -209,6 +268,10 @@ export function useRiverSimulation({ canvasRef, river, options, look, seed, enab
         front = {
           buffer: data.buffer, count: data.count, stride: data.stride, tailAges: data.tailAges,
         };
+        if (data.field && painter) {
+          painter.setField(data.field);
+          painter.advect(data.dt, paintLook(lookRef.current) ?? {});
+        }
         dirty = true;
         pushSample(stats.simMs, data.ms);
         if (data.diagnostics) {
@@ -284,6 +347,7 @@ export function useRiverSimulation({ canvasRef, river, options, look, seed, enab
       // current look decide from here. Replies it kept are handled now, in order.
       worker.postMessage({ type: "view", ...view });
       worker.postMessage({ type: "jitter", on: jitter });
+      worker.postMessage({ type: "field", on: field });
       for (const event of early.messages) worker.onmessage(event);
     } else {
       worker.postMessage({
@@ -296,6 +360,7 @@ export function useRiverSimulation({ canvasRef, river, options, look, seed, enab
         options,
         view,
         jitter,
+        field,
       });
     }
 
@@ -324,7 +389,7 @@ export function useRiverSimulation({ canvasRef, river, options, look, seed, enab
       document.removeEventListener("visibilitychange", onVisibility);
       riverRef.current = null;
     };
-  }, [canvasRef, river, options, seed, enabled]);
+  }, [canvasRef, paintCanvasRef, river, options, seed, enabled]);
 
   return riverRef;
 }

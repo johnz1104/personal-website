@@ -28,18 +28,22 @@ function windowSize() {
   return `${clientWidth}x${clientHeight}`;
 }
 
-// One stretch of river shared by every page routed inside this layout.
-// Navigating between those pages swaps only the <Outlet /> content; the river
-// stays mounted, so the flow and its dots carry on. Opening a page under a
-// different RiverLayout (a different `key` in App.jsx) starts a new river.
-// The river comes from config.js; the `bank` prop App.jsx passes is not used.
+// The page's river group: `home` for the homepage, Research, Projects and About, and
+// each detail page's own slug (config.js). Navigating within the home group swaps only
+// the <Outlet /> content; the river stays mounted, so the flow and its dots carry on.
+// Moving to another group (any other detail page) starts that group's river: the
+// stage below is keyed by group. The river comes from config.js; the `bank` prop
+// App.jsx passes is not used.
 function RiverLayout() {
   // Detail pages have a :slug. React Router shares one params object across the
-  // matched routes, so this layout sees its child's slug. The group cannot change
-  // while the layout is mounted: crossing groups mounts a new layout.
+  // matched routes, so this layout sees its child's slug.
   const { slug } = useParams();
-  const group = slug === undefined ? "home" : "detail";
-  const config = riverConfig[group];
+  const group = slug === undefined ? "home" : slug;
+  return <RiverStage key={group} group={group} config={riverConfig[group] ?? null} />;
+}
+
+// One stretch of river shared by every page routed inside it.
+function RiverStage({ group, config }) {
   const zoom = useSyncExternalStore(subscribeResize, pageZoom);
   // Re-renders on every resize, so the Flow box below can follow the window.
   useSyncExternalStore(subscribeResize, windowSize);
@@ -48,11 +52,11 @@ function RiverLayout() {
   // The Flow box and its obstacle in the water are placed once, for the window the
   // river starts in: the author's spot, or moved in if the window cannot show it.
   const [controls] = useState(
-    () => config?.controls && placeControls(config.controls, windowView()),
+    () => config?.controls && placeControls(config.controls, windowView(), config.river),
   );
   // A window made smaller later draws the box inside it, off its obstacle, so the
   // toggle stays in reach.
-  const shownControls = controls && placeControls(controls, windowView());
+  const shownControls = controls && placeControls(controls, windowView(), config.river);
   // A group without a river (config null) keeps the same page layout and zoom.
   const content = (
     // CSS zoom scales the content's layout, text and hit areas together.

@@ -325,6 +325,8 @@ a {
    content. z-index -1 puts them under all content, positioned or not, and stays
    inside the isolated .river-canvas. Fixed: the river is a backdrop the window
    crops, and the page scrolls over it. */
+/* The painted water (paint.js, idea-painted-river) sits under the dots, the same size. */
+.river-paint,
 .river-dots {
   position: fixed;
   top: 0;

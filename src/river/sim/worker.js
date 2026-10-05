@@ -12,19 +12,26 @@
 //   { type: "jitter", on }
 //       the dots' random walk on or off (off while tracer lines are drawn); the flow
 //       is untouched. init also takes `jitter` (default on).
+//   { type: "field", on }
+//       send the flow field with every frame (for the painted water, paint.js); init
+//       also takes `field` (default off).
 //   { type: "frame", dt, buffer }
 //       advance by dt seconds (at most MAX_FRAME_SECONDS), then return the dots in
 //       `buffer`, an ArrayBuffer to reuse (or null)
 // Replies:
 //   { type: "ready", warmupMs, start, diagnostics }
-//       start: "saved flow N" (1-5; flows.js) or "warm-up"; warmupMs: the time the
+//       start: "saved flow N" (1-based, of the river's group; flows.js) or "warm-up"; warmupMs: the time the
 //       start took (decoding and loading a saved flow, or the hidden warm-up)
-//   { type: "frame", buffer, count, stride, tailAges, ms, diagnostics }
+//   { type: "frame", buffer, count, stride, tailAges, ms, diagnostics, dt, field }
 //       buffer holds `count` dots of `stride` floats: x, y, tone, age, then the dot's
 //       tail (past positions, newest first; see bindings.cpp). The count includes dots
 //       that have just left, drawn until their tails follow them out. tailAges: the
-//       tail samples' ages in seconds (the same for every dot). ms is the time spent on
-//       this frame; diagnostics about twice a second, otherwise null
+//       tail samples' ages in seconds (the same for every dot). dt: the seconds the
+//       river advanced (the frame's, capped at MAX_FRAME_SECONDS). ms is the time spent on
+//       this frame; diagnostics about twice a second, otherwise null. With the field
+//       on, also `field`: { nx, ny, x0, y0, h, velocityScale, flow } (flow: density,
+//       then x and y velocity in lattice units, one nx x ny plane each, NaN density on
+//       land; river_export_flow and river_grid in bindings.cpp)
 //   { type: "error", message }
 // The page stops a river with worker.terminate(), which also interrupts a warm-up
 // in progress (a "dispose" message would wait behind it).
@@ -79,12 +86,23 @@ export function createRiver(lbm, { left, right = [], width, height, seed = 1n, o
     seed: seed64,
     warmUp: () => lbm._river_warm_up(),
     // The flow on the full grid (RiverSimulation::exportFlow): a Float32Array copy.
-    exportFlow() {
-      const { nx, ny } = this.diagnostics();
+    // Pass the grid's size to skip reading the diagnostics for it (once per frame).
+    exportFlow({ nx, ny } = this.diagnostics()) {
       const ptr = lbm._malloc(3 * nx * ny * 4);
       try {
         lbm._river_export_flow(ptr);
         return Float32Array.from(lbm.HEAPF32.subarray(ptr / 4, ptr / 4 + 3 * nx * ny));
+      } finally {
+        lbm._free(ptr);
+      }
+    },
+    // Where the flow's cells sit on the page: { x0, y0, h, velocityScale } (river_grid).
+    grid() {
+      const ptr = lbm._malloc(4 * 8);
+      try {
+        lbm._river_grid(ptr);
+        const [x0, y0, h, velocityScale] = lbm.HEAPF64.subarray(ptr / 8, ptr / 8 + 4);
+        return { x0, y0, h, velocityScale };
       } finally {
         lbm._free(ptr);
       }
@@ -142,25 +160,30 @@ function runWorker() {
   // The latest visible box; a resize can arrive while the module is still loading.
   let view = null;
   let jitter = true;
+  let field = false;
+  let grid = null;   // { nx, ny, x0, y0, h, velocityScale }, once the river exists
 
   async function init(data) {
     // A saved flow that matches this river loads while the module does.
-    const index = pickSavedFlow(data);
+    const pick = pickSavedFlow(data);
     const [lbm, saved] = await Promise.all([
       loadRiverModule(),
-      index === null ? null : loadSavedFlow(index),
+      pick === null ? null : loadSavedFlow(pick),
     ]);
     river = createRiver(lbm, data);
     view ??= data.view;
     if (view) river.setView(view.right, view.bottom);
     if (data.jitter === false) jitter = false;
     river.setDotJitter(jitter);
+    if (data.field === true) field = true;
+    const { nx, ny } = river.diagnostics();
+    grid = { nx, ny, ...river.grid() };
     const t0 = performance.now();
     let start = "warm-up";
     if (saved) {
       try {
         river.startFromFlow(saved);
-        start = `saved flow ${index + 1}`;
+        start = `saved flow ${pick.index + 1}`;
       } catch {
         // A grid that does not match: warm up instead.
       }
@@ -173,7 +196,8 @@ function runWorker() {
 
   function frame({ dt, buffer }) {
     const t0 = performance.now();
-    river.advance(Math.min(Math.max(dt, 0), MAX_FRAME_SECONDS));
+    const seconds = Math.min(Math.max(dt, 0), MAX_FRAME_SECONDS);
+    river.advance(seconds);
     const dots = river.dots();
     if (!buffer || buffer.byteLength < dots.byteLength) {
       // Headroom, so the buffer is not reallocated on every new dot.
@@ -188,9 +212,18 @@ function runWorker() {
       if (!diagnostics.finite) throw new Error("the river became non-finite");
     }
     const stride = river.dotStride();
+    const transfer = [buffer];
+    let flow = null;
+    if (field) {
+      flow = { ...grid, flow: river.exportFlow(grid) };
+      transfer.push(flow.flow.buffer);
+    }
     self.postMessage(
-      { type: "frame", buffer, count: dots.length / stride, stride, tailAges: river.tailAges(), ms, diagnostics },
-      [buffer],
+      {
+        type: "frame", buffer, count: dots.length / stride, stride, tailAges: river.tailAges(), ms,
+        diagnostics, field: flow, dt: seconds,
+      },
+      transfer,
     );
   }
 
@@ -204,6 +237,8 @@ function runWorker() {
       } else if (data.type === "jitter") {
         jitter = data.on;
         river?.setDotJitter(jitter);
+      } else if (data.type === "field") {
+        field = data.on;
       }
     } catch (error) {
       river = null;

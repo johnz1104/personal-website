@@ -9,8 +9,9 @@ import research from "./data/research.js";
 import projects from "./data/projects.js";
 import { homeBank } from "./river/banks.js";
 
-// Pages inside one RiverLayout share a single running river. The different
-// keys make React start a new river when crossing between the two groups.
+// Pages inside one RiverLayout share a single running river, except that each detail
+// page has its own (RiverLayout keys its river by page). The different keys make React
+// start a new river when crossing between the homepage pages and the detail pages.
 function App() {
   return (
     <Routes>
@@ -21,7 +22,7 @@ function App() {
         <Route path="/about" element={<About />} />
       </Route>
 
-      {/* Detail pages have no river until their own is designed (config.js). */}
+      {/* Each detail page has its own placeholder river (config.js, detailRivers.js). */}
       <Route element={<RiverLayout key="detail" bank={homeBank} />}>
         <Route
           path="/research/:slug"

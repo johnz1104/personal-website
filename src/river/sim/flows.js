@@ -1,11 +1,11 @@
-import saved from "./generated/flows/index.js";
+import groups from "./generated/flows/index.js";
 
-// Saved flows: the page river's developed flow at five moments of one long run
-// (`npm run build:flows`, fluids/lbm/tools/export-river-flows.mjs). The worker starts
-// from one of them, picked at random, instead of running the hidden warm-up, so the
-// flow shows as soon as the module loads. The river's seed stays random, so the
-// flows part within seconds. A river whose settings or banks differ from the saved
-// run (the tuner's) runs the warm-up as before.
+// Saved flows: each river group's developed flow at a few moments of one long run
+// (`npm run build:flows`, fluids/lbm/tools/export-river-flows.mjs), in one folder per
+// group. The worker starts from one of them, picked at random, instead of running the
+// hidden warm-up, so the flow shows as soon as the module loads. The river's seed
+// stays random, so the flows part within seconds. A river whose settings or banks
+// differ from every saved run (the tuner's) runs the warm-up as before.
 //
 // File layout, little-endian: "RVF1", nx and ny (uint16), the velocity and density
 // steps (float32), then three int16 planes of nx * ny cells, row-major: density - 1,
@@ -42,18 +42,26 @@ export function riverKey({ left, right = [], width, height }) {
   return hash.toString(16).padStart(8, "0");
 }
 
-// Which saved flow to start from (0-based, at random), or null when the saved run
-// does not match this river.
+// Which saved flow to start from: { group, index } (index 0-based, at random) from the
+// group whose saved run matches this river, or null when none does.
 export function pickSavedFlow({ left, right, width, height, options }) {
-  if (saved.count === 0 || flowOptions(options) !== flowOptions(saved.options)) return null;
-  if (riverKey({ left, right, width, height }) !== saved.river) return null;
-  return Math.floor(Math.random() * saved.count);
+  const key = riverKey({ left, right, width, height });
+  const wanted = flowOptions(options);
+  for (const [group, saved] of Object.entries(groups)) {
+    if (saved.count > 0 && saved.river === key && flowOptions(saved.options) === wanted) {
+      return { group, index: Math.floor(Math.random() * saved.count) };
+    }
+  }
+  return null;
 }
 
-// Fetches saved flow `index` and decodes it; null if it cannot be loaded.
-export async function loadSavedFlow(index) {
+// Fetches a saved flow ({ group, index }, pickSavedFlow) and decodes it; null if it
+// cannot be loaded.
+export async function loadSavedFlow({ group, index }) {
   try {
-    const response = await fetch(new URL(`./generated/flows/flow-${index + 1}.bin`, import.meta.url));
+    const response = await fetch(
+      new URL(`./generated/flows/${group}/flow-${index + 1}.bin`, import.meta.url),
+    );
     if (!response.ok) return null;
     return decodeFlow(await response.arrayBuffer());
   } catch {

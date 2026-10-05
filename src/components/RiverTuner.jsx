@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { LOOKS } from "../river/sim/config.js";
 import { readDotColors } from "../river/sim/draw.js";
+import { PAINT_DEFAULTS } from "../river/sim/paint.js";
 
 // Dev-only tuning panel for the river: `npm run dev`, then open /?tune. RiverDots
 // loads it with a dynamic import behind import.meta.env.DEV, so production builds
@@ -189,6 +191,162 @@ const styles = {
   dim: { color: "var(--color-muted)" },
 };
 
+// idea-painted-river: the painted look's settings (paint.js, drawBrushes in draw.js).
+// The sliders set look.paint and look.brush overrides; "Copy config" includes them.
+const PAINT_SLIDERS = [
+  { key: "opacity", label: "water opacity", min: 0, max: 1, step: 0.05 },
+  { key: "washAlpha", label: "wash between strokes", min: 0, max: 1, step: 0.05 },
+  { key: "strokeAlpha", label: "stroke strength", min: 0, max: 1, step: 0.05 },
+  { key: "coverage", label: "strokes in currents", min: 0, max: 0.8, step: 0.02 },
+  { key: "calm", label: "strokes in slow water", min: 0, max: 1, step: 0.05 },
+  { key: "contrast", label: "stroke contrast", min: 0.5, max: 5, step: 0.1 },
+  { key: "soft", label: "soft stroke edges", min: 0.005, max: 0.2, step: 0.005 },
+  { key: "depth", label: "deeper colour when fast", min: 0, max: 1, step: 0.05 },
+  { key: "noiseScale", label: "stroke width (units)", min: 1.5, max: 10, step: 0.1 },
+  { key: "step", label: "stroke length (units/step)", min: 0.8, max: 5, step: 0.1 },
+  { key: "period", label: "repaint period (sim s)", min: 0.5, max: 10, step: 0.25 },
+  { key: "highlights", label: "glints", min: 0, max: 1.5, step: 0.05 },
+  { key: "lumaMatch", label: "colour over lightness", min: 0, max: 1, step: 0.05 },
+  { key: "vRef", label: "full strokes from (units/s)", min: 2, max: 60, step: 1 },
+  { key: "shore", label: "shallow band", min: 0, max: 1, step: 0.05 },
+  { key: "shoreWidth", label: "shallow band width (units)", min: 4, max: 128, step: 2 },
+  { key: "nearWidth", label: "strokes fade at bank (units)", min: 2, max: 64, step: 1 },
+  { key: "edge", label: "pooling at bank", min: 0, max: 0.4, step: 0.02 },
+  { key: "grain", label: "paper grain", min: 0, max: 0.2, step: 0.01 },
+  { key: "resolution", label: "resolution (px per CSS px)", min: 0.5, max: 2, step: 0.25 },
+];
+const PAINT_COLORS = [
+  { key: "washSlow", label: "wash, slow water" },
+  { key: "washFast", label: "wash, fast water" },
+  { key: "shallow", label: "shallow band" },
+  { key: "highlight", label: "glints" },
+];
+
+function PaintedLook({ look, onLook }) {
+  const [preset, setPreset] = useState("");
+  const paint = look.paint ? { ...PAINT_DEFAULTS, ...(look.paint === true ? {} : look.paint) } : null;
+  const setPaint = (key, value) =>
+    onLook({ ...look, paint: { ...(look.paint === true ? {} : look.paint), [key]: value } });
+  const brush = look.brush ?? null;
+  const number = (value, fallback) => (Number.isFinite(Number(value)) ? Number(value) : fallback);
+  return (
+    <>
+      <div style={styles.section}>painted look (idea-painted-river)</div>
+      <div style={styles.grid}>
+        <label style={{ display: "contents" }}>
+          <span style={styles.dim}>preset</span>
+          <select
+            style={styles.input}
+            value={preset}
+            onChange={(e) => {
+              setPreset(e.target.value);
+              if (LOOKS[e.target.value]) onLook(LOOKS[e.target.value]);
+            }}
+          >
+            <option value="">choose…</option>
+            {Object.keys(LOOKS).map((name) => <option key={name} value={name}>{name}</option>)}
+          </select>
+        </label>
+        <label style={{ display: "contents" }}>
+          <span style={styles.dim}>slow motion (× real time)</span>
+          <input
+            style={styles.input}
+            type="number"
+            min="0.1"
+            max="1.5"
+            step="0.05"
+            value={look.timeScale ?? 1}
+            onChange={(e) => onLook({ ...look, timeScale: Math.min(1.5, Math.max(0.1, number(e.target.value, 1))) })}
+          />
+        </label>
+        <label style={{ display: "contents" }}>
+          <span style={styles.dim}>dots shown</span>
+          <input
+            type="checkbox"
+            checked={look.dots ?? true}
+            onChange={(e) => onLook({ ...look, dots: e.target.checked })}
+          />
+        </label>
+        <label style={{ display: "contents" }}>
+          <span style={styles.dim}>dots as brush strokes</span>
+          <input
+            type="checkbox"
+            checked={brush !== null}
+            onChange={(e) => onLook({
+              ...look,
+              brush: e.target.checked ? { width: 1.5, taper: 0.8, bristles: 0.45, glints: 0.06 } : null,
+            })}
+          />
+        </label>
+        {brush && (
+          <>
+            <Slider label="stroke width (× radius)" min={0.5} max={3} step={0.1} value={brush.width ?? 1.6}
+              onChange={(v) => onLook({ ...look, brush: { ...brush, width: v } })} />
+            <Slider label="taper" min={0} max={1} step={0.05} value={brush.taper ?? 0.75}
+              onChange={(v) => onLook({ ...look, brush: { ...brush, taper: v } })} />
+            <Slider label="bristle streaks" min={0} max={1} step={0.05} value={brush.bristles ?? 0}
+              onChange={(v) => onLook({ ...look, brush: { ...brush, bristles: v } })} />
+            <Slider label="glint dots (share)" min={0} max={0.3} step={0.01} value={brush.glints ?? 0}
+              onChange={(v) => onLook({ ...look, brush: { ...brush, glints: v } })} />
+          </>
+        )}
+        <label style={{ display: "contents" }}>
+          <span style={styles.dim}>painted water</span>
+          <input
+            type="checkbox"
+            checked={paint !== null}
+            onChange={(e) => onLook({ ...look, paint: e.target.checked })}
+          />
+        </label>
+        {paint && PAINT_SLIDERS.map((f) => (
+          <Slider key={f.key} label={f.label} min={f.min} max={f.max} step={f.step} value={paint[f.key]}
+            onChange={(v) => setPaint(f.key, v)} />
+        ))}
+        {paint && PAINT_COLORS.map((f) => (
+          <label key={f.key} style={{ display: "contents" }}>
+            <span style={styles.dim}>{f.label}</span>
+            <input type="color" value={paint[f.key]} onChange={(e) => setPaint(f.key, e.target.value)} />
+          </label>
+        ))}
+        {paint && paint.colors.map((color, i) => (
+          <label key={`pigment-${i}`} style={{ display: "contents" }}>
+            <span style={styles.dim}>pigment {i + 1}{i === 0 ? " (deepest)" : ""}</span>
+            <input
+              type="color"
+              value={color}
+              onChange={(e) => {
+                const next = [...paint.colors];
+                next[i] = e.target.value;
+                setPaint("colors", next);
+              }}
+            />
+          </label>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function Slider({ label, min, max, step, value, onChange }) {
+  return (
+    <label style={{ display: "contents" }}>
+      <span style={styles.dim}>{label}</span>
+      <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          style={{ flex: 1, minWidth: 0 }}
+          onChange={(e) => onChange(Number(e.target.value))}
+        />
+        <span style={{ width: 34, textAlign: "right" }}>{value}</span>
+      </span>
+    </label>
+  );
+}
+
 function RiverTuner({ group, riverRef, settings, defaults, onApply, onLook, onNewSeed }) {
   const [open, setOpen] = useState(true);
   // The panel can cover the cards or the river; "move" switches corners.
@@ -216,7 +374,7 @@ function RiverTuner({ group, riverRef, settings, defaults, onApply, onLook, onNe
 
   const copyConfig = async () => {
     const lookText = Object.entries(look)
-      .map(([k, v]) => `${k}: ${typeof v === "string" ? JSON.stringify(v) : v}`)
+      .map(([k, v]) => `${k}: ${typeof v === "number" || typeof v === "boolean" ? v : JSON.stringify(v)}`)
       .join(", ");
     const text =
       `  ${group}: {\n    river: pageRiver,\n    options: ${JSON.stringify(settings.options)},\n` +
@@ -273,6 +431,8 @@ function RiverTuner({ group, riverRef, settings, defaults, onApply, onLook, onNe
               </div>
             ))}
           </div>
+
+          <PaintedLook look={look} onLook={onLook} />
 
           <div style={styles.section}>simulation (Apply restarts, same seed)</div>
           <div style={styles.grid}>

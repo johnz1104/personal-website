@@ -1,5 +1,5 @@
 import { lazy, Suspense, useRef, useState } from "react";
-import { simulationOptions } from "../river/sim/config.js";
+import { pickFlow, pickLook, simulationOptions } from "../river/sim/config.js";
 import { prestartedSeed } from "../river/sim/prestart.js";
 import { pickSeed, useRiverSimulation } from "../river/sim/useRiverSimulation.js";
 
@@ -15,16 +15,21 @@ const RiverTuner = import.meta.env.DEV ? lazy(() => import("./RiverTuner.jsx")) 
 // `controls` is the Flow box as placed for this window: the simulation makes it solid.
 function RiverDots({ river, group, config, controls, playing }) {
   const canvasRef = useRef(null);
+  const paintCanvasRef = useRef(null);
   const [started, setStarted] = useState(playing);
   if (playing && !started) setStarted(true);
   // The seed of the river main.jsx may have started already (prestart.js).
   const [seed, setSeed] = useState(() => prestartedSeed() ?? pickSeed());
-  const [settings, setSettings] = useState({ options: config.options, look: config.look });
+  // idea-painted-river: ?look= and ?flow= pick one of the looks and flows to compare.
+  const [settings, setSettings] = useState(() => ({
+    options: pickFlow(config.options), look: pickLook(config.look),
+  }));
   const [tuning] = useState(
     () => RiverTuner !== null && new URLSearchParams(window.location.search).has("tune"),
   );
   const riverRef = useRiverSimulation({
     canvasRef,
+    paintCanvasRef,
     river,
     options: simulationOptions(settings.options, controls),
     look: settings.look,
@@ -34,6 +39,7 @@ function RiverDots({ river, group, config, controls, playing }) {
   });
   return (
     <>
+      {started && <canvas ref={paintCanvasRef} className="river-paint" aria-hidden="true" />}
       {started && <canvas ref={canvasRef} className="river-dots" aria-hidden="true" />}
       {tuning && (
         <Suspense fallback={null}>

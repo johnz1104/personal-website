@@ -1,4 +1,6 @@
-import { placeControls, riverConfig, simulationOptions, windowView } from "./config.js";
+import {
+  pickFlow, pickLook, placeControls, riverConfig, simulationOptions, windowView,
+} from "./config.js";
 import { pickSeed, readPlaying, wantsJitter } from "./useRiverSimulation.js";
 
 // Starts the river's worker as soon as the app's script runs, before React's first
@@ -20,8 +22,8 @@ export function prestartRiver() {
   const config = riverConfig.home;
   // The same values RiverLayout and RiverDots compute on their first render.
   const options = simulationOptions(
-    config.options,
-    placeControls(config.controls, windowView()),
+    pickFlow(config.options),
+    placeControls(config.controls, windowView(), config.river),
   );
   const seed = pickSeed();
   let worker;
@@ -46,7 +48,7 @@ export function prestartRiver() {
     seed,
     options,
     view: windowView(),
-    jitter: wantsJitter(config.look),
+    jitter: wantsJitter(pickLook(config.look)),
   });
   early = { worker, river: config.river, options, seed, messages };
 }
