@@ -6,9 +6,9 @@ const projects = [
   {
     id: "01",
     slug: "cold-war-simulator",
-    title: "Multi-Agent RL Cold War Simulator",
+    title: "Cold War Strategy Simulator",
     description:
-      "I model Cold War strategy as a game-theoretic, multi-agent system, training reinforcement learning agents to play as competing countries.",
+      "Cold War events modeled with a game-theoretic framework, using multi-agent reinforcement learning to train agents that play as competing countries.",
   },
   {
     id: "02",
