@@ -1,5 +1,6 @@
 import { useState, useSyncExternalStore } from "react";
 import { Outlet, useParams } from "react-router-dom";
+import ContactMenu from "./ContactMenu.jsx";
 import RiverBank from "./RiverBank.jsx";
 import RiverControls from "./RiverControls.jsx";
 import RiverDots from "./RiverDots.jsx";
@@ -62,6 +63,8 @@ function RiverStage({ group, config }) {
     // CSS zoom scales the content's layout, text and hit areas together.
     <div className="river-content" style={{ zoom }}>
       <Outlet />
+      {/* Only on the home river's pages; it stays put (and open) between them. */}
+      {group === "home" && <ContactMenu viewBottom={windowView().bottom} />}
     </div>
   );
   if (!config) {

@@ -3,7 +3,8 @@ import photo from "../assets/about-photo.webp";
 
 // Text takes the place of the homepage cards. The photo (cropped and converted from
 // the author's photo; DECISIONS.md) sits on the left, and the text is a column
-// beside it. Contact details may be added here later.
+// beside it. Contact details are in the Contact menu at the bottom left
+// (ContactMenu.jsx).
 function About() {
   return (
     <PageLayout title="About Me">
