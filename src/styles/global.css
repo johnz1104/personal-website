@@ -67,6 +67,9 @@ a {
   --intro-to-cards-spacing: 2rem;
   --card-padding-y: calc(2.25rem * var(--card-scale));
   --card-padding-x: 1.75rem;
+  /* The open Contact menu's height and a gap: scrolling pages end this far above
+     --contact-bottom (RiverLayout.jsx). */
+  --scroll-reserve: 4.25rem;
 }
 
 .river-canvas .intro {
@@ -75,6 +78,31 @@ a {
 
 .river-canvas .page {
   position: relative;
+}
+
+/* Research and Projects (PageLayout `scrolls`): the page fills the window down to the
+   Contact menu and scrolls there, so a long list never runs under the menu. While more
+   is below, the cards fade out over the last 3rem, clear for the last 1rem so the
+   next card's top edge does not show as a line (a line marked the end at first;
+   the author asked for it to be invisible, 2026-10-06). With everything in view,
+   nothing fades. No scrollbar: it would sit over the river. */
+.river-canvas .page--scroll {
+  position: fixed;
+  top: 0;
+  bottom: calc(var(--contact-bottom, 2.25rem) + var(--scroll-reserve));
+  left: 0;
+  width: 100%;
+  padding-bottom: 0.75rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.page--scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.page--scroll[data-more] {
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 3rem), transparent calc(100% - 1rem));
 }
 
 /* Page titles share the homepage name's font, size and position. */
@@ -162,6 +190,20 @@ a {
   color: var(--color-muted);
 }
 
+/* A detail page's link to the code (`repo` in the project data), above the note. */
+.page-link {
+  margin-top: var(--intro-to-cards-spacing);
+  font-size: var(--font-size-small);
+}
+
+.page-link a {
+  text-underline-offset: 0.25em;
+}
+
+.page-link + .page-note {
+  margin-top: 0.75rem;
+}
+
 /* Sits in the top padding so the title stays where the homepage name is. */
 .back-link {
   position: absolute;
@@ -193,11 +235,12 @@ a {
 /* The Contact menu (ContactMenu.jsx) on the home river's pages: a word at the bottom
    left of the window, at the Back link's left edge, with no box. The email address and
    GitHub open beside it, a little smaller, the GitHub line level with the word.
-   ContactMenu sets `bottom` (2.25rem, higher in taller windows). */
+   RiverLayout sets --contact-bottom (2.25rem, higher in taller windows;
+   contactPosition.js). */
 .contact {
   position: fixed;
   left: var(--page-padding);
-  bottom: 2.25rem;
+  bottom: var(--contact-bottom, 2.25rem);
   z-index: 1;
   display: flex;
   align-items: flex-end;

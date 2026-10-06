@@ -7,6 +7,7 @@ function Projects() {
     <PageLayout
       title="Projects"
       description="Fun side projects and software tools I've built."
+      scrolls
     >
       <ItemList
         items={projects.map((item) => ({ ...item, path: `/projects/${item.slug}` }))}

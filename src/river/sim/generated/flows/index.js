@@ -8,6 +8,7 @@ import group4 from "./n-body-solver/index.js";
 import group5 from "./scramjet-inlet-unstart/index.js";
 import group6 from "./spontaneous-stochasticity/index.js";
 import group7 from "./stochastic-fourier-neural-operator/index.js";
+import group8 from "./web-river-simulator/index.js";
 
 export default {
   "home": group0,
@@ -18,4 +19,5 @@ export default {
   "scramjet-inlet-unstart": group5,
   "spontaneous-stochasticity": group6,
   "stochastic-fourier-neural-operator": group7,
+  "web-river-simulator": group8,
 };

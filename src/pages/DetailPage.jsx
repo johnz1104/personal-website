@@ -25,6 +25,13 @@ function DetailPage({ items, backTo }) {
       backTo={backTo}
       centered
     >
+      {item.repo && (
+        <p className="page-link">
+          <a href={item.repo} target="_blank" rel="noopener noreferrer">
+            {item.repo.split("/").pop()} on GitHub ↗
+          </a>
+        </p>
+      )}
       <p className="page-note">This page is still being written.</p>
     </PageLayout>
   );

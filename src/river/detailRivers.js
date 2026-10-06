@@ -10,8 +10,9 @@ import { createCubicBank } from "./geometry.js";
 // - The water stays 40 units clear of the detail text (x 517-1211, y up to 447 in a
 //   1440 px window) and at least 120 units wide where it flows.
 // - Sizes, as water area against the homepage river's: the research pages 30% each;
-//   the Cold War simulator and the CFD library 30%, the neural operator 26%, the N-body
-//   solver 22% (smaller down the Projects list, gently).
+//   the Cold War simulator and the CFD library 30%, the web river simulator 28%, the
+//   neural operator 26%, the N-body solver 22% (smaller down the Projects list,
+//   gently).
 // - One bank on every page, the far side never shown (the author, 2026-10-05: "they
 //   should simply be one line for the river"), so one river seems to run through every
 //   page. The Cold War simulator and the neural operator had two banks until then.
@@ -91,6 +92,14 @@ export const detailRivers = {
   "cfd-research-library": {
     name: "narrows",
     river: oneBank([[1590, 0], [1538, 250], [1431, 560], [1325, 830], [1261, 1080]]),
+    options: TOP,
+    controls: CONTROLS,
+  },
+  "web-river-simulator": {
+    name: "echo",
+    // The page about the homepage's river (2026-10-06): a small echo of its bank, a
+    // shoulder high up and a long lean down to a wide mouth, out the top.
+    river: oneBank([[1590, 0], [1490, 210], [1525, 410], [1413, 700], [1328, 1080]]),
     options: TOP,
     controls: CONTROLS,
   },

@@ -1,14 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
 import contact from "../data/contact.js";
-import { PAGE_SCALE } from "../river/sim/config.js";
-
-// The menu's lowest point, in page units from the top of the river: where it sits in
-// a 1440 x 790 window, 2.25rem from the bottom. The bank turns left toward the bottom
-// of the window, and the panel opens beside the word, so much lower the email row would
-// reach the bank. Taller windows keep it here, at the same spot in the river as the
-// Flow box (a little below its level); shorter ones bring it to 2.25rem from their
-// bottom.
-const LOWEST = 905;
 
 // 16 x 16 icons from GitHub's Octicons (MIT licence): mail, mark-github, copy, check
 // and link-external ("open").
@@ -45,9 +36,9 @@ function Icon({ name }) {
 // share the home river). Clicking it opens the email address and GitHub beside it;
 // clicking it again, clicking elsewhere or pressing Escape closes them. The email
 // opens in the default mail program in the same tab: a new tab would stay empty when
-// that program is a desktop app. `viewBottom`: the window's bottom in page units
-// (windowView in config.js); RiverLayout re-renders this on every resize.
-function ContactMenu({ viewBottom }) {
+// that program is a desktop app. Its height above the window's bottom is
+// --contact-bottom, set by RiverLayout (contactPosition.js).
+function ContactMenu() {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const root = useRef(null);
@@ -92,12 +83,7 @@ function ContactMenu({ viewBottom }) {
   }
 
   return (
-    <div
-      className="contact"
-      ref={root}
-      // Inside the zoomed page content, so one page unit is PAGE_SCALE px here.
-      style={{ bottom: `max(2.25rem, ${(viewBottom - LOWEST) * PAGE_SCALE}px)` }}
-    >
+    <div className="contact" ref={root}>
       <button
         type="button"
         ref={toggle}

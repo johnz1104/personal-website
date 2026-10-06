@@ -7,6 +7,7 @@ function Research() {
     <PageLayout
       title="Research"
       description="My research interests and ongoing work."
+      scrolls
     >
       <ItemList
         items={research.map((item) => ({ ...item, path: `/research/${item.slug}` }))}

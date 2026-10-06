@@ -1,6 +1,7 @@
 import { useState, useSyncExternalStore } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import ContactMenu from "./ContactMenu.jsx";
+import { contactBottom } from "./contactPosition.js";
 import RiverBank from "./RiverBank.jsx";
 import RiverControls from "./RiverControls.jsx";
 import RiverDots from "./RiverDots.jsx";
@@ -58,13 +59,17 @@ function RiverStage({ group, config }) {
   // A window made smaller later draws the box inside it, off its obstacle, so the
   // toggle stays in reach.
   const shownControls = controls && placeControls(controls, windowView(), config.river);
+  const home = group === "home";
   // A group without a river (config null) keeps the same page layout and zoom.
   const content = (
     // CSS zoom scales the content's layout, text and hit areas together.
-    <div className="river-content" style={{ zoom }}>
+    <div
+      className="river-content"
+      style={{ zoom, ...(home && { "--contact-bottom": contactBottom(windowView().bottom) }) }}
+    >
       <Outlet />
       {/* Only on the home river's pages; it stays put (and open) between them. */}
-      {group === "home" && <ContactMenu viewBottom={windowView().bottom} />}
+      {home && <ContactMenu />}
     </div>
   );
   if (!config) {
