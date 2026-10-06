@@ -2,11 +2,13 @@ import { useEffect, useId, useRef, useState } from "react";
 import contact from "../data/contact.js";
 import { PAGE_SCALE } from "../river/sim/config.js";
 
-// The menu's lowest point, in page units from the top of the river. The bank turns left
-// toward the bottom of the window, so in windows taller than about 16:10 the open panel
-// crossed it (1440 x 900 and 1280 x 1000, measured 2026-10-05); there the menu rises to
-// stay on land. Common laptop windows (up to 1728 x 990) keep it at the bottom.
-const LOWEST = 960;
+// The menu's lowest point, in page units from the top of the river: where it sits in
+// a 1440 x 790 window, 2.25rem from the bottom. The bank turns left toward the bottom
+// of the window, and the panel opens beside the word, so much lower the email row would
+// reach the bank. Taller windows keep it here, at the same spot in the river as the
+// Flow box (a little below its level); shorter ones bring it to 2.25rem from their
+// bottom.
+const LOWEST = 905;
 
 // 16 x 16 icons from GitHub's Octicons (MIT licence): mail, mark-github, copy, check
 // and link-external ("open").
@@ -40,7 +42,7 @@ function Icon({ name }) {
 }
 
 // "Contact" at the bottom left of the window (RiverLayout shows it on the pages that
-// share the home river). Clicking it opens the email address and GitHub above it;
+// share the home river). Clicking it opens the email address and GitHub beside it;
 // clicking it again, clicking elsewhere or pressing Escape closes them. The email
 // opens in the default mail program in the same tab: a new tab would stay empty when
 // that program is a desktop app. `viewBottom`: the window's bottom in page units
@@ -94,8 +96,18 @@ function ContactMenu({ viewBottom }) {
       className="contact"
       ref={root}
       // Inside the zoomed page content, so one page unit is PAGE_SCALE px here.
-      style={{ bottom: `max(1.5rem, ${(viewBottom - LOWEST) * PAGE_SCALE}px)` }}
+      style={{ bottom: `max(2.25rem, ${(viewBottom - LOWEST) * PAGE_SCALE}px)` }}
     >
+      <button
+        type="button"
+        ref={toggle}
+        className="contact-toggle"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((shown) => !shown)}
+      >
+        Contact
+      </button>
       <ul className="contact-panel" id={panelId} hidden={!open}>
         <li>
           <Icon name="mail" />
@@ -136,16 +148,6 @@ function ContactMenu({ viewBottom }) {
           </a>
         </li>
       </ul>
-      <button
-        type="button"
-        ref={toggle}
-        className="contact-toggle"
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => setOpen((shown) => !shown)}
-      >
-        Contact
-      </button>
     </div>
   );
 }
