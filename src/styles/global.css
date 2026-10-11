@@ -132,23 +132,28 @@ a {
   margin-top: 1em;
 }
 
-/* About Me: the photo on the left and the text as a column beside it (lines start at
-   the same edge, not under the photo), both left of the river bank: the text column
-   is narrower than elsewhere. The photo is framed like the section cards. */
+/* About Me: the photo on the left with the first paragraph as a column beside it
+   (lines start at the same edge, not under the photo); later paragraphs (.about-wide)
+   run under both from the photo's left edge. Everything stays left of the river
+   bank: the text column is narrower than elsewhere. The photo is framed like the
+   section cards. */
 .about {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
-  margin-top: var(--intro-to-cards-spacing);
+  display: grid;
+  grid-template-columns: 10rem minmax(0, 29rem);
+  gap: 1em 1.5rem;
+  align-items: start;
+  max-width: none;
 }
 
-.about .prose {
-  max-width: 28rem;
+.about.prose p + p {
   margin-top: 0;
 }
 
+.about-wide {
+  grid-column: 1 / -1;
+}
+
 .about-photo {
-  flex: none;
   width: 10rem;
   height: auto;
   /* The top lines up with the first line's capitals. */
