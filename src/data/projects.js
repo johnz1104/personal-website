@@ -10,6 +10,7 @@ const projects = [
     title: "Cold War Strategy Simulator",
     description:
       "Cold War events modeled with a game-theoretic framework, using multi-agent reinforcement learning to train agents that play as competing countries.",
+    repo: "https://github.com/johnz1104/red-skies-theory",
   },
   {
     id: "02",
@@ -34,6 +35,7 @@ const projects = [
     title: "Stochastic Fourier Neural Operator",
     description:
       "A neural operator trained to learn solutions of the 1D stochastic Burgers' equation and the 2D stochastic Navier–Stokes equations.",
+    repo: "https://github.com/johnz1104/fluid-dynamics-fno",
   },
   {
     id: "05",
@@ -41,6 +43,7 @@ const projects = [
     title: "Differentiable N-Body Solver",
     description:
       "Simulates how gravitational N-body systems evolve, and uses its gradients to infer what telescopes can't measure directly, like masses and initial conditions, from observed motions.",
+    repo: "https://github.com/johnz1104/n-body",
   },
 ];
 

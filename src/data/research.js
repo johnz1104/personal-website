@@ -1,6 +1,7 @@
 // Entries on the Research page, in display order.
 // Each `slug` becomes the detail page URL: /research/<slug>. `description` is the
-// card's text; `intro` (optional) opens the detail page in its place.
+// card's text; `intro` (optional) opens the detail page in its place; `repo`
+// (optional) links the code from the detail page.
 const research = [
   {
     id: "01",
@@ -10,6 +11,7 @@ const research = [
       "Can partial observations identify transferable, physically consistent turbulence closure laws? I explore this using Bayesian inference in RANS turbulence modeling.",
     intro:
       "Can partial observations reveal a transferable, physically consistent description of unresolved turbulence? I use Bayesian inference to learn which closure laws the data support, with RANS turbulence models calibrated against high-fidelity simulations as the testbed.",
+    repo: "https://github.com/johnz1104/bayesian-rans-uq",
   },
   {
     id: "02",
@@ -19,6 +21,7 @@ const research = [
       "Turbulent flow can still have multiple futures, even as viscosity and uncertainty in its initial conditions go to zero. How do we describe the randomness that remains?",
     intro:
       "How does randomness persist in turbulent flow as viscosity and uncertainty in its initial conditions go to zero? Using the Sabra shell model and related multiscale models, I explore the mechanisms, universality, and memory of this randomness, and what it means for predictability.",
+    repo: "https://github.com/johnz1104/shell-turbulence",
   },
   {
     id: "03",
