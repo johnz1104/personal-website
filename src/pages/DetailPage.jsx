@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { useParams } from "react-router-dom";
+import BackToTop from "../components/BackToTop.jsx";
 import PageLayout from "../components/PageLayout.jsx";
 import writeups from "../writeups/index.js";
 
@@ -48,6 +49,7 @@ function DetailPage({ items, backTo }) {
           <Suspense fallback={null}>
             <WriteUp load={writeup} />
           </Suspense>
+          <BackToTop />
         </div>
       )}
     </PageLayout>

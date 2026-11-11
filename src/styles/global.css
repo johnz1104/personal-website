@@ -370,6 +370,39 @@ a {
   text-underline-offset: 0.25em;
 }
 
+/* "↑ Top" on long pages (BackToTop.jsx): the Back link's type, fixed in the bottom-left
+   corner, shown once the reader is a screen down. A cream backing keeps it readable
+   where it passes over text (phones). */
+.to-top {
+  position: fixed;
+  bottom: 1.5rem;
+  left: var(--page-padding);
+  z-index: 2;
+  padding: 0.3rem 0.5rem;
+  margin-left: -0.5rem;
+  border: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-small);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-fast), visibility var(--transition-fast);
+}
+
+.to-top[data-shown] {
+  opacity: 1;
+  visibility: visible;
+}
+
+.to-top:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
 /* Read by screen readers, not shown. */
 .visually-hidden {
   position: absolute;
