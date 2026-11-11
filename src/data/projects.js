@@ -10,6 +10,7 @@ const projects = [
     title: "Cold War Strategy Simulator",
     description:
       "Cold War events modeled with a game-theoretic framework, using multi-agent reinforcement learning to train agents that play as competing countries.",
+    intro: "A game-theoretic, multi-agent simulation of the Cold War, 1945–1991.",
     repo: "https://github.com/johnz1104/red-skies-theory",
   },
   {

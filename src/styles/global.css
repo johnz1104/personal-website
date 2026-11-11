@@ -209,6 +209,151 @@ a {
   margin-top: 0.75rem;
 }
 
+/* ---------- Write-ups ---------- */
+
+/* The header of a page with a write-up: three close lines (the intro on one line,
+   the GitHub link, the note), the author, 2026-11-11. Phones may still wrap the
+   intro. Other detail pages keep their spacing. */
+.page--centered:has(.writeup-slot) .intro {
+  max-width: none;
+  line-height: 1.5;
+}
+
+.page--centered:has(.writeup-slot) .page-link {
+  margin-top: 0.85rem;
+}
+
+.page--centered:has(.writeup-slot) .page-link + .page-note {
+  margin-top: 0.3rem;
+}
+
+/* A detail page's write-up (WriteUp.jsx; Markdown in src/writeups), under the note.
+   It sits on a slightly transparent off-white panel, wider than the intro, that may
+   run over the river and keeps the text readable there (the author, 2026-11-11:
+   the 60ch column felt squeezed). Text 14px (0.875rem), two steps below the
+   intro's 16px; headings in the same monospace, bold, a step up for each level, with
+   no rules between sections. Tables, display maths and diagrams wider than the
+   column scroll inside themselves, never the page. */
+.page--centered .writeup {
+  max-width: min(54rem, 100%);
+  margin-bottom: var(--section-spacing);
+  padding: 2rem 2.5rem 2.5rem;
+  background: rgba(247, 243, 235, 0.9);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 600px) {
+  .page--centered .writeup {
+    padding: 1.25rem 1rem 1.5rem;
+  }
+}
+
+.writeup h2,
+.writeup h3,
+.writeup h4 {
+  margin: 2.5em 0 0;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.writeup h2 {
+  font-size: 1.25em;
+}
+
+.writeup > h2:first-child {
+  margin-top: 0;
+}
+
+.writeup h3 {
+  font-size: 1.05em;
+  margin-top: 2em;
+}
+
+.writeup h4 {
+  font-size: 1em;
+  margin-top: 1.75em;
+}
+
+.writeup p,
+.writeup ul,
+.writeup ol {
+  margin: 1em 0 0;
+}
+
+.writeup ul,
+.writeup ol {
+  padding-left: 1.5em;
+}
+
+.writeup li + li {
+  margin-top: 0.4em;
+}
+
+.writeup a {
+  text-underline-offset: 0.25em;
+}
+
+.writeup code {
+  font-family: inherit;
+  font-size: 0.95em;
+  padding: 0 0.2em;
+  background: var(--color-card);
+  border: var(--border-width) solid rgba(0, 0, 0, 0.12);
+}
+
+.writeup-table {
+  margin-top: 1.25em;
+  overflow-x: auto;
+}
+
+.writeup table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.875em;
+  line-height: 1.5;
+  background: var(--color-card);
+}
+
+.writeup th,
+.writeup td {
+  padding: 0.45em 0.7em;
+  border: var(--border-width) solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.writeup th {
+  white-space: nowrap;
+}
+
+.writeup .katex-display {
+  margin: 1.25em 0 0;
+  padding: 0.25em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.writeup .katex {
+  font-size: 1.25em;
+}
+
+.writeup-figure {
+  margin: 1.5em 0 0;
+  overflow-x: auto;
+}
+
+.writeup-figure pre.mermaid {
+  margin: 0;
+  text-align: center;
+  font-family: inherit;
+  /* The Mermaid source shows only until the diagram is drawn; keep it quiet. */
+  color: transparent;
+}
+
+.writeup-figure pre.mermaid[data-processed] {
+  color: inherit;
+}
+
 /* Sits in the top padding so the title stays where the homepage name is. */
 .back-link {
   position: absolute;
