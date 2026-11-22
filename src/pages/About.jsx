@@ -20,14 +20,14 @@ function About() {
           Student at UNC Chapel Hill studying Physics and Applied Mathematics. I
           love using math to describe how the world works and learning
           interesting approaches to challenging problems. I&nbsp;believe that what{" "}
-          <em>can</em> be modeled by math can be <em>perfectly</em> modeled by
-          math. The only limitations lie in the creativity of whoever builds the
-          model and in computational power.
+          <em>can</em> be modeled by math can be perfectly modeled by
+          math. The only limitations lie in computational power and the
+          creativity of the person who builds the model.
         </p>
         <p className="about-wide">
           My interests span the fields of mathematics, physics, and computer
           science, particularly in fluid dynamics, statistical mechanics, game
-          theory, scientific computing, and machine learning.
+          theory, performance software, and machine learning.
         </p>
       </div>
     </PageLayout>
