@@ -1,0 +1,27 @@
+.writeup .exhibit { margin: 2rem 0; padding: 1.25rem; border: 1px solid var(--ink, #111); background: #f5f1e8; font-size: .875rem; }
+.writeup .exhibit h3 { margin-top: .25rem; }
+.writeup .exhibit h4 { margin-top: 1rem; }
+.writeup .exhibit-kicker { text-transform: uppercase; letter-spacing: .07em; font-size: .8rem; margin-bottom: .5rem; }
+.exhibit-controls { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; margin: 1rem 0; }
+.exhibit-controls label { display: flex; flex-direction: column; gap: .3rem; max-width: 100%; }
+.exhibit button, .exhibit select { font: inherit; color: #111; background: #fdfbf6; border: 1px solid #111; padding: .5rem .65rem; min-height: 44px; max-width: 100%; border-radius: 0; }
+.exhibit button { cursor: pointer; }
+.exhibit button:disabled { opacity: .5; cursor: default; }
+.exhibit :focus-visible { outline: 3px solid #235d8b; outline-offset: 3px; }
+.exhibit input[type=checkbox] { width: 20px; height: 20px; }
+.exhibit-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 1.25rem; }
+.exhibit-grid > div { min-width: 0; }
+.exhibit svg { display: block; width: 100%; margin: 1rem 0; overflow: visible; }
+.exhibit svg text { font-size: 14px; font-family: inherit; fill: currentColor; }
+.writeup .exhibit table { min-width: 0; width: 100%; font-size: .875rem; }
+.writeup .exhibit th, .writeup .exhibit td { padding: .4rem; overflow-wrap: anywhere; white-space: normal; }
+.exhibit caption { text-align: left; margin-bottom: .5rem; }
+.exhibit dt { margin-top: .7rem; }
+.exhibit dd { margin: .2rem 0 0; font-weight: bold; }
+.exhibit details { margin: 1rem 0; }
+.exhibit summary { cursor: pointer; padding: .5rem 0; }
+.exhibit-callout { padding: 1rem; border-left: 3px solid #111; background: #fdfbf6; }
+@media (max-width: 700px) { .exhibit-grid { grid-template-columns: minmax(0,1fr); } .writeup .exhibit { padding: .75rem; } }
+@media (prefers-reduced-motion: reduce) { .exhibit *, .exhibit *::before, .exhibit *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+.exhibit .learning-policy-table { table-layout: fixed; }

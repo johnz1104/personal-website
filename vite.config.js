@@ -16,7 +16,7 @@ const WRITEUP = /\/src\/writeups\/[^/]+\.md$/
 const githubSlug = (text) =>
   text.trim().toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-')
 
-function renderWriteup(source) {
+export function renderWriteup(source) {
   // Take the maths out before Markdown sees it ("_" and "\" mean other things
   // there), outside fenced code; put it back typeset afterwards.
   const math = []
@@ -55,13 +55,37 @@ function renderWriteup(source) {
     .replace(/MATHSLOT(\d+)END/g, (_, i) => math[i])
 }
 
+// Only standalone, allowlisted markers become React components. Markdown itself
+// remains HTML-disabled; render once so heading uniqueness spans all segments.
+export function splitExhibits(html) {
+  const parts = html.split(/<p>:::exhibit (payoffs|crisis|learning)<\/p>\n?/g)
+  return parts.map((part, i) => i % 2 ? { exhibit: part } : { html: part })
+}
+
+export function preserveColdWarAnchors(html) {
+  const aliases = {
+    '2-one-crisis-step-by-step': '3-one-crisis-step-by-step',
+    '3-modeling-the-cold-war': '2-modeling-the-cold-war',
+    '5-game-engine-and-implementation': '6-game-engine-and-implementation',
+    '6-reinforcement-learning': '5-reinforcement-learning',
+    '7-evaluation-assumptions-and-limitations': '7-evaluation-and-open-questions',
+  }
+  for (const [oldId, newId] of Object.entries(aliases)) {
+    html = html.replace(`<h2 id="${newId}">`, `<span id="${oldId}" aria-hidden="true"></span><h2 id="${newId}">`)
+  }
+  return html
+}
+
 function writeups() {
   return {
     name: 'writeups',
     load(id) {
       if (!WRITEUP.test(id)) return null
       this.addWatchFile(id)
-      return `export default ${JSON.stringify(renderWriteup(readFileSync(id, 'utf8')))}`
+      let html = renderWriteup(readFileSync(id, 'utf8'))
+      if (id.endsWith('/cold-war-simulator.md')) html = preserveColdWarAnchors(html)
+      const segments = splitExhibits(html)
+      return `export const segments = ${JSON.stringify(segments)}; export default ${JSON.stringify(html)}`
     },
   }
 }

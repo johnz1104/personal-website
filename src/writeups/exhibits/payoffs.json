@@ -1,0 +1,306 @@
+{
+  "commit": "0c898090e6321f6dd8f670ccd7f69e04cbd25c57",
+  "source": "https://github.com/johnz1104/red-skies-theory",
+  "entry": "cuban_missile_crisis@1962-Q4:historical/0",
+  "catalog": "9a13d96bd657cbe993e7e7e017dba498621402a38f247be3a24a4cfe53cd50f7",
+  "seed": 0,
+  "sourceTreeSHA256": "e54f2b8d06bef097541d2992e678e082337cc0fd2445f49a27824507afdb095c",
+  "kappa": 100.0,
+  "sourceHashes": {
+    "campaign/payoffs/derive.py": "53a4f47f3e0b58d42cd249c9c7ebd911d6ed222a67427456d28fc2b4278cff57",
+    "campaign/payoffs/goals.py": "c6f8da19c55f206ba7dfd7d94476dfd36dc4e244b011937b2ce29c79fc4282c3",
+    "campaign/data/goals.yaml": "7a5524af46566fc9e0f757e44a12f9854e925492012fb7d5d55a6863a9671ce5",
+    "campaign/data/events/era3_1954_1962.yaml": "b6be1f7d5b37bff5023eca86a6b0832a2de19e8c07576d077fde2937d3844e8d"
+  },
+  "originalNuclear": 6.0834211284237645,
+  "rows": [
+    {
+      "factor": 1,
+      "power": "USA",
+      "outcome": "a_prevails",
+      "contributions": {
+        "security": 0.11620813951341624,
+        "influence": 0.09688817587222953,
+        "economy": 0.0,
+        "regime": 0.0,
+        "empire": 0.0,
+        "autonomy": 0.0,
+        "credibility": 1.4999999999999996
+      },
+      "followOn": 0.6453884750629034,
+      "value": 2.36,
+      "audienceCost": 1.5,
+      "weights": {
+        "security": 0.2,
+        "influence": 0.4,
+        "economy": 0.15,
+        "regime": 0.1,
+        "credibility": 0.15
+      }
+    },
+    {
+      "factor": 1,
+      "power": "USA",
+      "outcome": "compromise",
+      "contributions": {
+        "security": 0.0,
+        "influence": 0.0,
+        "economy": 0.0,
+        "regime": 0.0,
+        "empire": 0.0,
+        "autonomy": 0.0,
+        "credibility": 0.0
+      },
+      "followOn": 0.649274377939298,
+      "value": 0.65,
+      "audienceCost": 1.5,
+      "weights": {
+        "security": 0.2,
+        "influence": 0.4,
+        "economy": 0.15,
+        "regime": 0.1,
+        "credibility": 0.15
+      }
+    },
+    {
+      "factor": 1,
+      "power": "USA",
+      "outcome": "b_prevails",
+      "contributions": {
+        "security": -0.7449589833017578,
+        "influence": -0.09620338546310725,
+        "economy": 0.0,
+        "regime": 0.0,
+        "empire": 0.0,
+        "autonomy": 0.0,
+        "credibility": -1.4999999999999996
+      },
+      "followOn": 0.6833465874156494,
+      "value": -1.66,
+      "audienceCost": 1.5,
+      "weights": {
+        "security": 0.2,
+        "influence": 0.4,
+        "economy": 0.15,
+        "regime": 0.1,
+        "credibility": 0.15
+      }
+    },
+    {
+      "factor": 1,
+      "power": "USSR",
+      "outcome": "a_prevails",
+      "contributions": {
+        "security": 0.0,
+        "influence": -0.06284756467483679,
+        "economy": 0.0,
+        "regime": 0.0,
+        "empire": 0.0,
+        "autonomy": 0.0,
+        "credibility": -0.4999999999999999
+      },
+      "followOn": 1.244060987386181,
+      "value": 0.68,
+      "audienceCost": 0.5,
+      "weights": {
+        "security": 0.2,
+        "influence": 0.45,
+        "economy": 0.15,
+        "regime": 0.15,
+        "credibility": 0.05
+      }
+    },
+    {
+      "factor": 1,
+      "power": "USSR",
+      "outcome": "compromise",
+      "contributions": {
+        "security": 0.0,
+        "influence": 0.0,
+        "economy": 0.0,
+        "regime": 0.0,
+        "empire": 0.0,
+        "autonomy": 0.0,
+        "credibility": 0.0
+      },
+      "followOn": 1.2408653167954036,
+      "value": 1.24,
+      "audienceCost": 0.5,
+      "weights": {
+        "security": 0.2,
+        "influence": 0.45,
+        "economy": 0.15,
+        "regime": 0.15,
+        "credibility": 0.05
+      }
+    },
+    {
+      "factor": 1,
+      "power": "USSR",
+      "outcome": "b_prevails",
+      "contributions": {
+        "security": 0.8245523217920592,
+        "influence": 0.06026532866837589,
+        "economy": 0.0,
+        "regime": 0.0,
+        "empire": 0.0,
+        "autonomy": 0.0,
+        "credibility": 0.4999999999999999
+      },
+      "followOn": 1.25250549697311,
+      "value": 2.64,
+      "audienceCost": 0.5,
+      "weights": {
+        "security": 0.2,
+        "influence": 0.45,
+        "economy": 0.15,
+        "regime": 0.15,
+        "credibility": 0.05
+      }
+    },
+    {
+      "factor": 0.5,
+      "power": "USA",
+      "outcome": "a_prevails",
+      "contributions": {
+        "security": 0.11620813951341624,
+        "influence": 0.09688817587222953,
+        "economy": 0.0,
+        "regime": 0.0,
+        "empire": 0.0,
+        "autonomy": 0.0,
+        "credibility": 1.4999999999999996
+      },
+      "followOn": 0.5937404286206762,
+      "value": 2.31,
+      "audienceCost": 1.5,
+      "weights": {
+        "security": 0.2,
+        "influence": 0.4,
+        "economy": 0.15,
+        "regime": 0.1,
+        "credibility": 0.15
+      }
+    },
+    {
+      "factor": 0.5,
+      "power": "USA",
+      "outcome": "compromise",
+      "contributions": {
+        "security": 0.0,
+        "influence": 0.0,
+        "economy": 0.0,
+        "regime": 0.0,
+        "empire": 0.0,
+        "autonomy": 0.0,
+        "credibility": 0.0
+      },
+      "followOn": 0.5976263314970708,
+      "value": 0.6,
+      "audienceCost": 1.5,
+      "weights": {
+        "security": 0.2,
+        "influence": 0.4,
+        "economy": 0.15,
+        "regime": 0.1,
+        "credibility": 0.15
+      }
+    },
+    {
+      "factor": 0.5,
+      "power": "USA",
+      "outcome": "b_prevails",
+      "contributions": {
+        "security": -0.4911395314431255,
+        "influence": -0.09620338546310725,
+        "economy": 0.0,
+        "regime": 0.0,
+        "empire": 0.0,
+        "autonomy": 0.0,
+        "credibility": -1.4999999999999996
+      },
+      "followOn": 0.6258286047363174,
+      "value": -1.46,
+      "audienceCost": 1.5,
+      "weights": {
+        "security": 0.2,
+        "influence": 0.4,
+        "economy": 0.15,
+        "regime": 0.1,
+        "credibility": 0.15
+      }
+    },
+    {
+      "factor": 0.5,
+      "power": "USSR",
+      "outcome": "a_prevails",
+      "contributions": {
+        "security": 0.0,
+        "influence": -0.06284756467483679,
+        "economy": 0.0,
+        "regime": 0.0,
+        "empire": 0.0,
+        "autonomy": 0.0,
+        "credibility": -0.4999999999999999
+      },
+      "followOn": 1.205571652944743,
+      "value": 0.64,
+      "audienceCost": 0.5,
+      "weights": {
+        "security": 0.2,
+        "influence": 0.45,
+        "economy": 0.15,
+        "regime": 0.15,
+        "credibility": 0.05
+      }
+    },
+    {
+      "factor": 0.5,
+      "power": "USSR",
+      "outcome": "compromise",
+      "contributions": {
+        "security": 0.0,
+        "influence": 0.0,
+        "economy": 0.0,
+        "regime": 0.0,
+        "empire": 0.0,
+        "autonomy": 0.0,
+        "credibility": 0.0
+      },
+      "followOn": 1.202375982353966,
+      "value": 1.2,
+      "audienceCost": 0.5,
+      "weights": {
+        "security": 0.2,
+        "influence": 0.45,
+        "economy": 0.15,
+        "regime": 0.15,
+        "credibility": 0.05
+      }
+    },
+    {
+      "factor": 0.5,
+      "power": "USSR",
+      "outcome": "b_prevails",
+      "contributions": {
+        "security": 0.543519513874624,
+        "influence": 0.06327001429909149,
+        "economy": 0.0,
+        "regime": 0.0,
+        "empire": 0.0,
+        "autonomy": 0.0,
+        "credibility": 0.4999999999999999
+      },
+      "followOn": 1.2156335725358762,
+      "value": 2.32,
+      "audienceCost": 0.5,
+      "weights": {
+        "security": 0.2,
+        "influence": 0.45,
+        "economy": 0.15,
+        "regime": 0.15,
+        "credibility": 0.05
+      }
+    }
+  ]
+}

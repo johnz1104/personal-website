@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "katex/dist/katex.min.css";
+import Exhibit from "../writeups/exhibits/Exhibit.jsx";
 
 // Mermaid's colours and type, from the site's (variables.css): black lines and text
 // on the cream page, cards' off-white inside the boxes, the monospace font.
@@ -24,12 +25,16 @@ const MERMAID = {
 // maths already typeset. Mermaid diagrams are drawn here, after the HTML is in, by
 // Mermaid loaded only for pages that have one.
 function WriteUp({ load }) {
-  const [html, setHtml] = useState(null);
+  const [content, setContent] = useState(null);
+  const [failed, setFailed] = useState(false);
   const article = useRef(null);
 
   useEffect(() => {
     let live = true;
-    load().then((module) => live && setHtml(module.default));
+    setContent(null);
+    setFailed(false);
+    load().then((module) => live && setContent(module.segments ?? [{ html: module.default }]))
+      .catch(() => live && setFailed(true));
     return () => {
       live = false;
     };
@@ -37,7 +42,7 @@ function WriteUp({ load }) {
 
   useEffect(() => {
     const root = article.current;
-    if (html === null || !root) return undefined;
+    if (content === null || !root) return undefined;
     let live = true;
     const diagrams = [...root.querySelectorAll("pre.mermaid:not([data-processed])")];
     if (diagrams.length) {
@@ -53,19 +58,22 @@ function WriteUp({ load }) {
     // A link straight to a section (…#4-game-theory-and-decision-making) arrives
     // before the text exists; go there once it does.
     const { hash } = window.location;
-    if (hash) document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView();
+    if (hash) {
+      try { document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView(); }
+      catch { /* A malformed hash must not prevent the article from rendering. */ }
+    }
     return () => {
       live = false;
     };
-  }, [html]);
+  }, [content]);
 
   return (
-    <article
-      ref={article}
-      className="prose writeup"
-      aria-busy={html === null}
-      dangerouslySetInnerHTML={{ __html: html ?? "" }}
-    />
+    <article ref={article} className="prose writeup" aria-busy={content === null && !failed}>
+      {failed && <p role="alert">The article could not load. Please reload this page.</p>}
+      {content?.map((part, index) => part.exhibit
+        ? <Exhibit key={index} id={part.exhibit} />
+        : <div key={index} dangerouslySetInnerHTML={{ __html: part.html }} />)}
+    </article>
   );
 }
 
